@@ -24,3 +24,16 @@ As part of this process however, you should look to refactor some of the code in
 Once you have completed your work, send us a link to your public repository.
 
 Good luck!
+
+NOTES:
+
+Given the time:
+- I would have added better error handling, which would have also removed magic strings 
+- I might have refactored even further if I were to return values which also would have helped creating unit tests 
+- I could have done void unit test 
+
+This was a fun and enjoyable task, albeit not as great as I would have liked it.
+
+Would love to hear feedback on where I went wrong and what else I could have improved.
+
+Thanks!
