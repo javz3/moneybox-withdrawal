@@ -7,22 +7,21 @@ namespace Moneybox.App.Features
     public class WithdrawMoney
     {
         private readonly IAccountRepository _accountRepository;
-        private readonly ICheckBalanceService _checkBalanceService;
-        private readonly ILimitReachedService _limitReached;
+        private readonly IBalanceService _balanceService;
 
-        public WithdrawMoney(IAccountRepository accountRepository, ICheckBalanceService checkbalanceService, ILimitReachedService limitReached)
+        public WithdrawMoney(IAccountRepository accountRepository, IBalanceService balanceService)
         {
             _accountRepository = accountRepository;
-            _checkBalanceService = checkbalanceService;
-            _limitReached = limitReached;
+            _balanceService = balanceService;
         }
 
         public void Execute(Guid fromAccountId, decimal amount)
         {
             var accountFrom = _accountRepository.GetAccountById(fromAccountId);
 
-            _checkBalanceService.CheckingBalance(accountFrom, amount);
-            _limitReached.LimitReached(Account.WithdrawalLimit, amount, "Account withdrawal limit reached");
+            _balanceService.IsInsufficientFunds(accountFrom, amount);
+            _balanceService.IsLowBalance(accountFrom, amount);
+            _balanceService.IsLimitReached(Account.WithdrawalLimit, amount, "Account withdrawal limit reached");
 
             accountFrom.Withdrawn = accountFrom.Withdrawn - amount;
 

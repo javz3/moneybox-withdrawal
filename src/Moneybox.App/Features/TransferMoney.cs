@@ -7,15 +7,13 @@ namespace Moneybox.App.Features
     public class TransferMoney
     {
         private readonly IAccountRepository _accountRepository;
-        private readonly ICheckBalanceService _checkBalanceService;
-        private readonly ILimitReachedService _limitReachedService;
+        private readonly IBalanceService _balanceService;
         private readonly INotificationService _notificationService;
 
-        public TransferMoney(IAccountRepository accountRepository, ICheckBalanceService checkbalanceService, ILimitReachedService limitReached, INotificationService notificationService)
+        public TransferMoney(IAccountRepository accountRepository, IBalanceService balanceService, INotificationService notificationService)
         {
             _accountRepository = accountRepository;
-            _checkBalanceService = checkbalanceService;
-            _limitReachedService = limitReached;
+            _balanceService = balanceService;
             _notificationService = notificationService;
         }
 
@@ -24,12 +22,13 @@ namespace Moneybox.App.Features
             var accountFrom = _accountRepository.GetAccountById(fromAccountId);
             var accountTo = _accountRepository.GetAccountById(toAccountId);
 
-            _checkBalanceService.CheckingBalance(accountFrom, amount);
+            _balanceService.IsInsufficientFunds(accountFrom, amount);
+            _balanceService.IsLowBalance(accountFrom, amount);
 
             var paidIn = accountTo.PaidIn + amount;
 
             ApproachingPayInLimit(accountTo, paidIn);
-            _limitReachedService.LimitReached(Account.PayInLimit, paidIn, "Account pay in limit reached");
+            _balanceService.IsLimitReached(Account.PayInLimit, paidIn, "Account pay in limit reached");
 
             accountFrom.Balance = accountFrom.Balance - amount;
             accountFrom.Withdrawn = accountFrom.Withdrawn - amount;
