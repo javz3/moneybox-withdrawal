@@ -2,8 +2,10 @@
 {
     public interface IBalanceService
     {
-        void IsInsufficientFunds(Account account, decimal amount);
-        void IsLowBalance(Account account, decimal amount);
-        void IsLimitReached(decimal limit, decimal amount, string errorMessage);
+        bool IsInsufficientFunds(Account account, decimal amount);
+
+        bool IsLowBalance(Account account, decimal amount);
+
+        bool IsLimitReached(decimal limit, decimal amount);
     }
 }

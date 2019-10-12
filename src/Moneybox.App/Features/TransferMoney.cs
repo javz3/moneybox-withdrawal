@@ -1,6 +1,6 @@
-﻿using Moneybox.App.DataAccess;
+﻿using System;
+using Moneybox.App.DataAccess;
 using Moneybox.App.Domain.Services;
-using System;
 
 namespace Moneybox.App.Features
 {
@@ -20,32 +20,38 @@ namespace Moneybox.App.Features
         public void Execute(Guid fromAccountId, Guid toAccountId, decimal amount)
         {
             var accountFrom = _accountRepository.GetAccountById(fromAccountId);
-            var accountTo = _accountRepository.GetAccountById(toAccountId);
+            var accountTo = _accountRepository.GetAccountById(toAccountId);            
 
-            _balanceService.IsInsufficientFunds(accountFrom, amount);
-            _balanceService.IsLowBalance(accountFrom, amount);
+            if (_balanceService.IsInsufficientFunds(accountFrom, amount) || _balanceService.IsLowBalance(accountFrom, amount))
+            {
+                _notificationService.NotifyApproachingPayInLimit(accountTo.User.Email);
+                return; 
+            }
 
             var paidIn = accountTo.PaidIn + amount;
 
-            ApproachingPayInLimit(accountTo, paidIn);
-            _balanceService.IsLimitReached(Account.PayInLimit, paidIn, "Account pay in limit reached");
+            if (_balanceService.IsLimitReached(Account.PayInLimit, paidIn))
+            {
+                _notificationService.NotifyFundsLow(accountTo.User.Email);
+                return;
+            }
 
-            accountFrom.Balance = accountFrom.Balance - amount;
-            accountFrom.Withdrawn = accountFrom.Withdrawn - amount;
-
-            accountTo.Balance = accountTo.Balance + amount;
-            accountTo.PaidIn = accountTo.PaidIn + amount;
-
-            _accountRepository.Update(accountFrom);
-            _accountRepository.Update(accountTo);
+            UpdateAccountFrom(amount, accountFrom);
+            UpdateAccountTo(amount, accountTo);
         }
 
-        private void ApproachingPayInLimit(Account to, decimal paidIn)
+        private void UpdateAccountFrom(decimal amount, Account accountFrom)
         {
-            if (Account.PayInLimit - paidIn < 500m)
-            {
-                _notificationService.NotifyApproachingPayInLimit(to.User.Email);
-            }
+            accountFrom.Balance -= amount;
+            accountFrom.Withdrawn -= amount;
+            _accountRepository.Update(accountFrom);
+        }
+
+        private void UpdateAccountTo(decimal amount, Account accountTo)
+        {
+            accountTo.Balance += amount;
+            accountTo.PaidIn += amount;
+            _accountRepository.Update(accountTo);
         }
     }
 }

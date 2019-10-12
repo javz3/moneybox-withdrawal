@@ -1,6 +1,6 @@
-﻿using Moneybox.App.DataAccess;
+﻿using System;
+using Moneybox.App.DataAccess;
 using Moneybox.App.Domain.Services;
-using System;
 
 namespace Moneybox.App.Features
 {
@@ -21,9 +21,9 @@ namespace Moneybox.App.Features
 
             _balanceService.IsInsufficientFunds(accountFrom, amount);
             _balanceService.IsLowBalance(accountFrom, amount);
-            _balanceService.IsLimitReached(Account.WithdrawalLimit, amount, "Account withdrawal limit reached");
+            _balanceService.IsLimitReached(Account.WithdrawalLimit, amount);
 
-            accountFrom.Withdrawn = accountFrom.Withdrawn - amount;
+            accountFrom.Withdrawn -= amount;
 
             _accountRepository.Update(accountFrom);
         }

@@ -25,7 +25,7 @@ namespace Moneybox.Tests.Services
                 User = new User
                 {
                     Id = It.IsAny<Guid>(),
-                    Name = "Joe",
+                    Forename = "Joe",
                     Email = "joe.bloggs@apple.com"
                 },
                 Balance = 500m,

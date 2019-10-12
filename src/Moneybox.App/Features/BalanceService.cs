@@ -1,5 +1,4 @@
 ﻿using Moneybox.App.Domain.Services;
-using System;
 
 namespace Moneybox.App.Features
 {
@@ -12,28 +11,32 @@ namespace Moneybox.App.Features
             _notificationService = notificationService;
         }
 
-        public void IsInsufficientFunds(Account account, decimal amount)
+        public bool IsInsufficientFunds(Account account, decimal amount)
         {
-            if (account.Balance - amount < 0m)
+            if (account.Balance - amount < Account.InsufficientFundsLimit)
             {
-                throw new InvalidOperationException("Insufficient funds to make transfer");
+                return true;
             }
+            return false;
         }
 
-        public void IsLowBalance(Account account, decimal amount)
+        public bool IsLowBalance(Account account, decimal amount)
         {
-            if (account.Balance - amount < 500m)
+            if (account.Balance - amount < Account.LowFundsLimit)
             {
                 _notificationService.NotifyFundsLow(account.User.Email);
+                return true;                
             }
+            return false;
         }
 
-        public void IsLimitReached(decimal limit, decimal amount, string errorMessage)
+        public bool IsLimitReached(decimal limit, decimal amount)
         {
             if (amount > Account.PayInLimit)
             {
-                throw new InvalidOperationException(errorMessage);
+                return true;
             }
+            return false;
         }
     }
 }
