@@ -11,30 +11,22 @@ namespace Moneybox.App.Features
             _notificationService = notificationService;
         }
 
-        public bool IsInsufficientFunds(Account account, decimal amount)
+        public bool IsInsufficientFunds(Account accountFrom, decimal amount)
         {
-            if (account.Balance - amount < Account.InsufficientFundsLimit)
+            if (accountFrom.Balance - amount < Account.InsufficientFundsLimit)
             {
+                _notificationService.NotifyFundsLow(accountFrom.User.Email);
                 return true;
             }
             return false;
         }
 
-        public bool IsLowBalance(Account account, decimal amount)
+        public bool IsLowBalance(Account accountFrom, decimal amount)
         {
-            if (account.Balance - amount < Account.LowFundsLimit)
+            if (accountFrom.Balance - amount < Account.LowFundsLimit)
             {
-                _notificationService.NotifyFundsLow(account.User.Email);
+                _notificationService.NotifyFundsLow(accountFrom.User.Email);
                 return true;                
-            }
-            return false;
-        }
-
-        public bool IsLimitReached(decimal limit, decimal amount)
-        {
-            if (amount > Account.PayInLimit)
-            {
-                return true;
             }
             return false;
         }

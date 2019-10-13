@@ -8,24 +8,25 @@ namespace Moneybox.App.Features
     {
         private readonly IAccountRepository _accountRepository;
         private readonly IBalanceService _balanceService;
+        private readonly IWithdrawService _withdrawService;
 
-        public WithdrawMoney(IAccountRepository accountRepository, IBalanceService balanceService)
+        public WithdrawMoney(IAccountRepository accountRepository, IBalanceService balanceService, IWithdrawService withdrawService)
         {
             _accountRepository = accountRepository;
             _balanceService = balanceService;
+            _withdrawService = withdrawService;
         }
 
         public void Execute(Guid fromAccountId, decimal amount)
         {
             var accountFrom = _accountRepository.GetAccountById(fromAccountId);
 
-            _balanceService.IsInsufficientFunds(accountFrom, amount);
-            _balanceService.IsLowBalance(accountFrom, amount);
-            _balanceService.IsLimitReached(Account.WithdrawalLimit, amount);
+            if (_balanceService.IsInsufficientFunds(accountFrom, amount) || _balanceService.IsLowBalance(accountFrom, amount))
+            {
+                return;
+            }
 
-            accountFrom.Withdrawn -= amount;
-
-            _accountRepository.Update(accountFrom);
+            _withdrawService.Withdraw(accountFrom, amount);
         }
     }
 }

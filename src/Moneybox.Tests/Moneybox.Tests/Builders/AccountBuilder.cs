@@ -3,9 +3,9 @@ using Moneybox.App;
 
 namespace Moneybox.Tests
 {
-    public static class TestHelper
+    public static class AccountBuilder
     {
-        public static Account CreateAccount(decimal balance, decimal withdrawn, decimal paidIn)
+        public static Account Build(decimal balance, decimal withdrawn, decimal paidIn)
         {
             var fixture = new Fixture();
             var model = fixture.Build<Account>()
