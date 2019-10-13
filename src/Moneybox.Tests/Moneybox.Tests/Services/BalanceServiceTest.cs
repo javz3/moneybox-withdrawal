@@ -23,7 +23,7 @@ namespace Moneybox.Tests.Services
 
         [TestCase("500000")]
         [TestCase("8000000")]
-        public void GivenInsufficientFunds_IsInsufficientFunds__NotifyUserAndReturnsTrue(string amount)
+        public void GivenInsufficientFunds_IsInsufficientFunds__NotifyUser(string amount)
         {
             //Act
             var result =_sut.IsInsufficientFunds(_from, decimal.Parse(amount));
@@ -34,13 +34,13 @@ namespace Moneybox.Tests.Services
         }
 
         [TestCase("5")]
-        public void GivenInsufficientFunds_IsInsufficientFunds_ReturnsFalse(string amount)
+        public void GivenInsufficientFunds_IsInsufficientFunds_DoesNotNotifyUser(string amount)
         {
             //Act
-            var result = _sut.IsInsufficientFunds(_from, decimal.Parse(amount));
+            _sut.IsInsufficientFunds(_from, decimal.Parse(amount));
 
             //Assert
-            Assert.IsFalse(result);
+            _notificationService.Verify(x => x.NotifyFundsLow(_from.User.Email), Times.Never());
         }
 
         [TestCase("500000")]
@@ -48,10 +48,9 @@ namespace Moneybox.Tests.Services
         public void GivenLowBalance_LowBalance__NotifyUserAndReturnsTrue(string amount)
         {
             //Act
-            var result = _sut.IsInsufficientFunds(_from, decimal.Parse(amount));
+            _sut.IsInsufficientFunds(_from, decimal.Parse(amount));
 
             //Assert
-            Assert.IsTrue(result);
             _notificationService.Verify(x => x.NotifyFundsLow(_from.User.Email));
         }
 

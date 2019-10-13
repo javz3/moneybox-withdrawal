@@ -22,13 +22,15 @@ namespace Moneybox.App.Features
         public void Execute(Guid fromAccountId, Guid toAccountId, decimal amount)
         {
             var accountFrom = _accountRepository.GetAccountById(fromAccountId);
-            var accountTo = _accountRepository.GetAccountById(toAccountId);            
+            var accountTo = _accountRepository.GetAccountById(toAccountId);
 
-            if (_balanceService.IsInsufficientFunds(accountFrom, amount) || _balanceService.IsLowBalance(accountFrom, amount))
+            
+            if (_balanceService.IsInsufficientFunds(accountFrom, amount))
             {                
                 return; 
             }
 
+            _balanceService.IsLowBalance(accountFrom, amount);
             IsLimitReached(accountTo, amount);
             _withdrawService.Withdraw(accountFrom, amount);
             UpdateAccountTo(amount, accountTo);

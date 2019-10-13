@@ -4,6 +4,6 @@
     {
         bool IsInsufficientFunds(Account accountFrom, decimal amount);
 
-        bool IsLowBalance(Account accountFrom, decimal amount);
+        void IsLowBalance(Account accountFrom, decimal amount);
     }
 }

@@ -21,11 +21,12 @@ namespace Moneybox.App.Features
         {
             var accountFrom = _accountRepository.GetAccountById(fromAccountId);
 
-            if (_balanceService.IsInsufficientFunds(accountFrom, amount) || _balanceService.IsLowBalance(accountFrom, amount))
+            if (_balanceService.IsInsufficientFunds(accountFrom, amount))
             {
                 return;
             }
 
+            _balanceService.IsLowBalance(accountFrom, amount);
             _withdrawService.Withdraw(accountFrom, amount);
         }
     }

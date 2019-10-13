@@ -21,14 +21,12 @@ namespace Moneybox.App.Features
             return false;
         }
 
-        public bool IsLowBalance(Account accountFrom, decimal amount)
+        public void IsLowBalance(Account accountFrom, decimal amount)
         {
             if (accountFrom.Balance - amount < Account.LowFundsLimit)
             {
                 _notificationService.NotifyFundsLow(accountFrom.User.Email);
-                return true;                
             }
-            return false;
         }
     }
 }
